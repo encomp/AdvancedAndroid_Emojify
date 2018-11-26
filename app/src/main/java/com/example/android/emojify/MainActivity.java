@@ -38,7 +38,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Emojifier.onFaceDetectedListener {
 
   private static final int REQUEST_IMAGE_CAPTURE = 1;
   private static final int REQUEST_STORAGE_PERMISSION = 1;
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
 
     // Detect the faces
-    mResultsBitmap = Emojifier.detectFacesAndOverlayEmoji(this, mResultsBitmap);
+    Emojifier.detectFacesAndOverlayEmoji(this, getApplicationContext(), mResultsBitmap);
 
     // Set the new bitmap to the ImageView
     mImageView.setImageBitmap(mResultsBitmap);
@@ -224,5 +224,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Delete the temporary image file
     BitmapUtils.deleteImageFile(this, mTempPhotoPath);
+  }
+
+  @Override
+  public void onFaceDetected(final Bitmap bitmap) {
+    runOnUiThread(
+        () -> {
+          mImageView.setImageBitmap(bitmap);
+        });
   }
 }
